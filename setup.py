@@ -15,7 +15,8 @@ setup(
         'requests',
         'watchdog',
         'pycrypto',
-        'future'
+        'future',
+        'web.py'
     ],
 
     entry_points={
