@@ -9,14 +9,7 @@ import argparse
 import sender
 import receiver
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-v',
-                    '--version',
-                    help='show version',
-                    action='store_true')
-args = parser.parse_args()
-
-if args.version:
+def print_version():
     print '''\033[32m
             + ------------------------------------------ +
             |           FastSync 0.1.0.0 is free         |
@@ -35,9 +28,12 @@ if args.version:
             + ------------------------------------------ +
     \033[0m'''
 
-    sys.exit(0)
+    # sys.exit(0)
+
+print_version()
 
 def sending():
+    parser = argparse.ArgumentParser()
     parser.add_argument('send_path',
                         type=str,
                         help='sending end local path like /home/work/workspace')
@@ -49,16 +45,13 @@ def sending():
                         help='secret key',
                         default='',
                         nargs='?')
+
     args = parser.parse_args()
 
     sender.sending(args.send_path, args.receive_uri, args.secret_key)
 
 def receiving():
-    parser.add_argument('-v',
-                        '--version',
-                        help='show version',
-                        action='version',
-                        version='FastSync version:%s' % version)
+    parser = argparse.ArgumentParser()
     parser.add_argument('port',
                         type=int,
                         help='receiving service port')
