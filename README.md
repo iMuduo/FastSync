@@ -4,3 +4,12 @@
 ```
     pip install git+https://github.com/iMuduo/FastSync.git@master
 ```
+# 同步-发送端
+```
+    fsnd /home/work/send http://127.0.0.1:8080/home/work/receive [screte_key]
+```
+
+# 同步接收端
+```
+    frcv 8080 [screte_key]
+```
