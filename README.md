@@ -9,7 +9,7 @@
     fsnd /home/work/send http://127.0.0.1:8080/home/work/receive [screte_key]
 ```
 
-# 同步接收端
+# 同步-接收端
 ```
     frcv 8080 [screte_key]
 ```
