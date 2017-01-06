@@ -5,6 +5,7 @@
     FastSync Sender
 '''
 import requests
+import platform
 import logging
 from urlparse import urlparse
 from base64 import b64encode
@@ -24,7 +25,10 @@ class SenderHandler(FileSystemEventHandler):
         self.send_path = send_path.rstrip('/')
         result = urlparse(receive_uri)
         self.server = '%s://%s' % (result.scheme, result.netloc)
-        self.receive_path = result.path.rstrip('/')
+        if 'Windows' in platform.system():
+            self.receive_path = result.path.strip('/')
+        else:
+            self.receive_path = result.path.rstrip('/')
         self.secret_key = secret_key
 
     def on_created(self, event):
