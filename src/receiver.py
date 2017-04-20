@@ -22,6 +22,16 @@ urls = (
     ('/(.*)', 'index')
 )
 
+
+def create_file(path, content):
+    try:
+        os.makedirs(os.path.dirname(path))
+    except:
+        pass
+
+    print >> open(path, 'wb'), content
+
+
 class index:
     
     def GET(self, path):
@@ -45,7 +55,7 @@ class index:
                         os.makedirs(data.get('path'))
                         logging.info('[Create] DIR %s' % data.get('path'))
                 else:
-                    print >> open(data.get('path'), 'wb'), b64decode(data.get('data'))
+                    create_file(data.get('path'), b64decode(data.get('data')))
                     logging.info('[Create] FILE %s' % data.get('path'))
             elif path == 'move':
                 shutil.move(data.get('fpath'), data.get('tpath'))
@@ -63,7 +73,7 @@ class index:
                         os.makedirs(data.get('path'))
                         logging.info('[Modify] DIR %s' % data.get('path'))
                 else:
-                    print >> open(data.get('path'), 'wb'), b64decode(data.get('data'))
+                    create_file(data.get('path'), b64decode(data.get('data')))
                     logging.info('[Modify] FILE %s' % data.get('path'))
             else:
                 return {
@@ -85,7 +95,7 @@ def receiving(port, secret_key):
     sys.argv.append(port)
     web.secret_key = secret_key
     app = web.application(urls, globals())
-    app.run()    
+    app.run()
 
 if __name__ == "__main__":
     receiving('1234', '')

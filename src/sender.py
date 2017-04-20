@@ -4,6 +4,7 @@
 '''
     FastSync Sender
 '''
+import time
 import requests
 import platform
 import logging
@@ -64,10 +65,18 @@ class SenderHandler(FileSystemEventHandler):
 
     def on_deleted(self, event):
         logging.info('[Delete] %s %s' % ('DIR' if event.is_directory else 'FILE', self.mapping(event.src_path)))       
-        response = requests.post('%s/delete' % self.server, data={
-            'secret_key': self.secret_key,
-            'path': self.mapping(event.src_path),
-        }).json()
+        if event.is_directory:        
+            response = requests.post('%s/delete' % self.server, data={
+                'secret_key': self.secret_key,
+                'path': self.mapping(event.src_path),
+                'is_directory': 'true',
+            }).json()
+        else:
+            response = requests.post('%s/create' % self.server, data={
+                'secret_key': self.secret_key,
+                'path': self.mapping(event.src_path),
+                'is_directory': 'false',
+            }).json()
         if response['status'] == 0:
             logging.info('[Delete] Success')
         else:
@@ -96,18 +105,28 @@ class SenderHandler(FileSystemEventHandler):
         return path.replace(self.send_path, self.receive_path)
 
 def sending(send_path, receive_uri, secret_key):
-    observer = Observer()
-    observer.schedule(
-        SenderHandler(send_path, receive_uri, secret_key),
-        send_path,
-        recursive=True
-    )
-    observer.setDaemon(False)
-    observer.start()
-    logging.info('start sync path: %s -> %s' % (send_path, receive_uri))
+
+    def start_observer():
+        observer = Observer()
+        observer.schedule(
+            SenderHandler(send_path, receive_uri, secret_key),
+            send_path,
+            recursive=True
+        )
+        observer.start()
+        logging.info('start sync path: %s -> %s' % (send_path, receive_uri))
+
+        return observer
+    
+    observer = start_observer()
+    
+    while True:
+        if not observer.isAlive():
+            observer = start_observer()        
+        time.sleep(3)
 
 if __name__ == '__main__':
-    sending('/Users/123/tmp/1', 'http://127.0.0.1:1234/Users/123/tmp/2', '')
+    sending('/Users/yuyansong/tmp/1', 'http://127.0.0.1:1234/Users/yuyansong/tmp/2', '')
 
 
 
