@@ -19,6 +19,14 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
+def read_file_as_b64(file_path):
+    try:
+        with open(file_path, 'rb') as f:
+            return b64encode(f.read())
+    except Exception as e:
+        logging.info(e)
+    return None
+
 class SenderHandler(FileSystemEventHandler):
 
     def __init__(self, send_path, receive_uri, secret_key):
@@ -41,10 +49,14 @@ class SenderHandler(FileSystemEventHandler):
                 'is_directory': 'true',
             }).json()
         else:
+            data = read_file_as_b64(event.src_path)
+            if data == None:
+                return
+
             response = requests.post('%s/create' % self.server, data={
                 'secret_key': self.secret_key,
                 'path': self.mapping(event.src_path),
-                'data': b64encode(open(event.src_path, 'rb').read()),
+                'data': data,
             }).json()
         if response['status'] == 0:
             logging.info('[Create] Success')
@@ -91,10 +103,14 @@ class SenderHandler(FileSystemEventHandler):
                 'is_directory': 'true',
             }).json()
         else:
+            data = read_file_as_b64(event.src_path)
+            if data == None:
+                return
+
             response = requests.post('%s/modify' % self.server, data={
                 'secret_key': self.secret_key,
                 'path': self.mapping(event.src_path),
-                'data': b64encode(open(event.src_path, 'rb').read()),
+                'data': data,
             }).json()
         if response['status'] == 0:
             logging.info('[Modify] Success')
@@ -122,11 +138,12 @@ def sending(send_path, receive_uri, secret_key):
     
     while True:
         if not observer.isAlive():
+            observer.stop()
             observer = start_observer()        
         time.sleep(3)
 
 if __name__ == '__main__':
-    sending('/Users/yuyansong/tmp/1', 'http://127.0.0.1:1234/Users/yuyansong/tmp/2', '')
+    sending('/Users/123/tmp/1', 'http://127.0.0.1:8080/Users/123/tmp/2', '')
 
 
 

@@ -23,14 +23,16 @@ urls = (
 )
 
 
-def create_file(path, content):
+def write_file_by_b64(path, content):
     try:
         os.makedirs(os.path.dirname(path))
     except:
         pass
 
-    print >> open(path, 'wb'), content
-
+    try:
+        print >> open(path, 'wb'), b64decode(content)
+    except Exception as e:
+        logging.info(e)
 
 class index:
     
@@ -55,7 +57,7 @@ class index:
                         os.makedirs(data.get('path'))
                         logging.info('[Create] DIR %s' % data.get('path'))
                 else:
-                    create_file(data.get('path'), b64decode(data.get('data')))
+                    write_file_by_b64(data.get('path'), data.get('data'))
                     logging.info('[Create] FILE %s' % data.get('path'))
             elif path == 'move':
                 shutil.move(data.get('fpath'), data.get('tpath'))
@@ -73,7 +75,7 @@ class index:
                         os.makedirs(data.get('path'))
                         logging.info('[Modify] DIR %s' % data.get('path'))
                 else:
-                    create_file(data.get('path'), b64decode(data.get('data')))
+                    write_file_by_b64(data.get('path'), data.get('data'))
                     logging.info('[Modify] FILE %s' % data.get('path'))
             else:
                 return {
@@ -98,4 +100,4 @@ def receiving(port, secret_key):
     app.run()
 
 if __name__ == "__main__":
-    receiving('1234', '')
+    receiving('8080', '')
