@@ -4,14 +4,18 @@
 '''
     FastSync Sender
 '''
+
+import os
 import time
 import requests
 import platform
 import logging
+import signal
 from urlparse import urlparse
 from base64 import b64encode
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from watchdog.events import FileCreatedEvent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -121,11 +125,12 @@ class SenderHandler(FileSystemEventHandler):
         return path.replace(self.send_path, self.receive_path)
 
 def sending(send_path, receive_uri, secret_key):
+    sender_handler = SenderHandler(send_path, receive_uri, secret_key)
 
     def start_observer():
         observer = Observer()
         observer.schedule(
-            SenderHandler(send_path, receive_uri, secret_key),
+            sender_handler,
             send_path,
             recursive=True
         )
@@ -135,6 +140,15 @@ def sending(send_path, receive_uri, secret_key):
         return observer
     
     observer = start_observer()
+
+    def sync_all(signum, fram):
+        for parent, dirnames, filenames in os.walk(send_path):
+            for filename in filenames:
+                path = os.path.join(parent, filename)
+                event = FileCreatedEvent(path)
+                sender_handler.on_created(event)
+
+    signal.signal(signal.SIGALRM, sync_all)
     
     while True:
         if not observer.isAlive():
