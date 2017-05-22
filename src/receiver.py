@@ -30,7 +30,7 @@ def write_file_by_b64(path, content):
         pass
 
     try:
-        print >> open(path, 'wb'), b64decode(content)
+        print(b64decode(content), file=open(path, 'wb'))
     except Exception as e:
         logging.info(e)
 

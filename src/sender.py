@@ -11,7 +11,7 @@ import requests
 import platform
 import logging
 import signal
-from urlparse import urlparse
+from urllib.parse import urlparse
 from base64 import b64encode
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
