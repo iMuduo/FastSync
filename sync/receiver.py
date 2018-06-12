@@ -94,10 +94,10 @@ class index:
         }
 
 def receiving(port, secret_key):
-    sys.argv.append(port)
+    sys.argv.append(str(port))
     web.secret_key = secret_key
     app = web.application(urls, globals())
     app.run()
 
 if __name__ == "__main__":
-    receiving('8080', '')
+    receiving('8500', '')
