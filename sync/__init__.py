@@ -6,11 +6,11 @@
 '''
 import sys
 import argparse
-import sender
-import receiver
+from . import sender
+from . import receiver
 
 def print_version():
-    print '''\033[32m
+    print('''\033[32m
             + ------------------------------------------ +
             |           FastSync 0.2.0 is free         |
             + ------------------------------------------ +
@@ -26,7 +26,7 @@ def print_version():
             |            Author : Muduo                  |
             |                                            |
             + ------------------------------------------ +
-    \033[0m'''
+    \033[0m''')
 
 def sending():
     print_version()
