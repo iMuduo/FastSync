@@ -11,5 +11,5 @@
 
 # 同步-接收端
 ```
-    frcv 8080 [screte_key]
+    nohup frcv 8080 [screte_key] > 
 ```
