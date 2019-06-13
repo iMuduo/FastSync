@@ -95,6 +95,7 @@ class index:
         }
 
 def receiving(port, secret_key):
+    del sys.argv[1:]
     sys.argv.append(str(port))
     web.secret_key = secret_key
     app = web.application(urls, globals())
